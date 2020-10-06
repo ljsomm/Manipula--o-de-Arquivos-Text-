@@ -6,7 +6,7 @@
 char nome[3][20];
 char email[3][30];
 
-int equalStrings(const char *str1, const char *str2, long size){//Comparador de Strings (Parametros: string1, string2, tamanho)
+int equalStrings(const char *str1, const char *str2, long size){ //Comparador de Strings (Parametros: string1, string2, tamanho)
     short bol = 1;
     for(int i = 0; i < size && (str1[i] != '\0' || str2[i] != '\0'); i++){
         if(str1[i] != str2[i]){
@@ -16,7 +16,17 @@ int equalStrings(const char *str1, const char *str2, long size){//Comparador de 
     return(bol);
 }
 
-void readOnlyNames(){//Le apenas os nomes
+int validEmail(const char *e){ //verifica se o email é valido (tendo @)
+    int bol = 0;
+    for(int i = 0; i < 30 && e[i]!='\0'; i++){
+        if(e[i] == '@'){
+            bol = 1;
+        }
+    }
+    return(bol);
+}
+
+void readOnlyNames(){ //Le apenas os nomes
     FILE *arquivo;
     arquivo = fopen("arq.txt", "rt");
     for(int i = 0; i < 3; i++){
@@ -25,7 +35,7 @@ void readOnlyNames(){//Le apenas os nomes
     fclose(arquivo);
 }
 
-void readData(){//Le todos os dados
+void readData(){ //Le todos os dados
     FILE *arquivo;
     arquivo = fopen("arq.txt", "rt");
     for(int i = 0; i < 3; i++){
@@ -53,16 +63,15 @@ void errorSet(const char *e){ //mudar a tela para caso ocorra algum erro
     system("color 4");
     printf("\n\n-->ERRO: %s", e);
     getch();
-    system("cls");
     system("color 7");
 }
 
 void main(){
-    FILE *arquivo;
-    char src_nm[20], src_email[30], src_letter;
-    short bol, opt, menu;
-    system("color 7");
-    setlocale(LC_ALL, "portuguese");
+    FILE *arquivo; //ponteiro para o arquivo (tipo FILE)
+    char src_nm[30], src_letter; //src_nm - para pesquisa de nomes e emails | src_letter - para pesquisa da primeira letra
+    short bol, menu, cont; //bol - variavel "booleana" | menu - variavel para o switch | cont - contador para pesquisas (nomes e emails)
+    system("color 7"); //cor padrao para o programa (stdlib.h)
+    setlocale(LC_ALL, "portuguese"); //para permitir acentos e caracteres especiais no programa com base no portugues (locale.h)
     do{
         system("cls");
         printf("+++++++++++++++| SEJA BEM-VINDO! |+++++++++++++++\n\n1 – Entrada de dados\n2 – Lista todos os dados na tela\n3 – Pesquisa um nome e mostra na tela\n4 – Pesquisa os nomes pela 1ª Letra e mostra todos na tela\n5 – Altera dados\n6 – Exclui dados\n7 - Sair\n\nInsira sua opção--> ");
@@ -75,14 +84,20 @@ void main(){
                 for(int i = 0; i<3 ; i++){
                     printf("\nInsira o %dº Nome--> ", i+1);
                     gets(nome[i]);
-                    printf("Insira o %dº E-mail--> ", i+1);
-                    gets(email[i]);
+                    do{
+                        printf("Insira o %dº E-mail--> ", i+1);
+                        gets(email[i]);
+                        if(!validEmail(email[i])){
+                            errorSet("Insira um email válido!\n\n\n");
+                        }
+                    }while(!validEmail(email[i]));
                 }
                 writeData();
                 printf("\n\n--Tecle algo para voltar ao menu--");
                 getch();
                 break;
             case 2:
+                cont = 0;
                 readData();
                 printf("=== LISTAGEM DE TODOS OS DADOS ===\n\nNomes:\n\n");
                 for(int i = 0; i < 3; i++){
@@ -96,6 +111,7 @@ void main(){
                 getch();
                 break;
             case 3:
+                cont = 0;
                 readOnlyNames();
                 printf("=== PESQUISE UM NOME ===\n\nInsira o nome a ser pesquisado--> ");
                 getchar();
@@ -110,6 +126,12 @@ void main(){
                     if(bol){
                         printf("\nEncontrado--> %s", nome[i]);
                     }
+                    else{
+                        cont++;
+                    }
+                }
+                if(cont == 3){
+                    printf("\n--> Nenhum registro foi encontrado");
                 }
                 printf("\n\n--Tecle algo para voltar ao menu--");
                 getch();
@@ -122,6 +144,7 @@ void main(){
                     scanf(" %c", &src_letter);
                     if(!(src_letter >= 65 && src_letter <= 90) && !(src_letter >= 97 && src_letter <= 122)){
                         errorSet("O caracter digitado não condiz com uma letra!");
+                        system("cls");
                     }
                 }while(!(src_letter >= 65 && src_letter <= 90) && !(src_letter >= 97 && src_letter <= 122));
                 printf("\nNomes com a primeira letra '%c':\n", src_letter);
@@ -146,65 +169,52 @@ void main(){
                 getch();
                 break;
             case 5:
+                cont = 0;
                 readData();
-                printf("=== ALTERAR DADOS ===\n\nO que deseja alterar:\n\n1 - Nome\n2 - E-mail\n\nOpção--> ");
-                scanf("%d", &opt);
+                printf("=== ALTERAR DADOS ===\n");
+                printf("\nInserir o que vai ser alterado--> ");
                 getchar();
-                switch(opt){
-                    case 1:
-                            //nome
-                            printf("Inserir o nome a ser alterado--> ");
-                            gets(src_nm);
-                            for(int i = 0; i < 3; i++){
-                                if(equalStrings(src_nm, nome[i], sizeof(nome[i]))){
-                                    printf("Inserir o novo nome--> ");
-                                    gets(nome[i]);
-                                }
-                            }
-                        break;
-                    case 2:
-                            //email
-                            printf("Inserir o e-mail a ser alterado--> ");
-                            gets(src_email);
-                             for(int i = 0; i < 3; i++){
-                                if(equalStrings(src_email, email[i], sizeof(email[i]))){
-                                    printf("Insira o novo email--> ");
-                                    gets(email[i]);
-                                }
-                             }
-                        break;
+                gets(src_nm);
+                for(int i = 0; i < 3; i++){
+                        if(equalStrings(src_nm, nome[i], sizeof(nome[i]))){
+                            printf("Inserir o novo nome--> ");
+                            gets(nome[i]);
+                        }
+                        else if(equalStrings(src_nm, email[i], sizeof(email[i]))){
+                            printf("Inserir o novo email--> ");
+                            gets(nome[i]);
+                        }
+                        else{
+                                cont++;
+                        }
+                }
+                if(cont == 3){
+                    printf("\n--> Nenhum registro foi encontrado");
                 }
                 writeData();
                 printf("\n\n--Tecle algo para voltar ao menu--");
                 getch();
                 break;
             case 6:
+                cont = 0;
                 readData();
-                printf("=== EXCLUIR DADOS ===\n\nO que deseja excluir:\n\n1 - Nome\n2 - E-mail\n\nOpção--> ");
-                scanf("%d", &opt);
+                printf("=== EXCLUIR DADOS ===\n");
+                printf("\nInserir o que deseja excluir--> ");
                 getchar();
-                switch(opt){
-                    case 1:
-                        //nome
-                        printf("Inserir o nome que deseja excluir--> ");
-                        gets(src_nm);
-                        for(int i = 0; i < 3; i++){
-                            if(equalStrings(src_nm, nome[i],sizeof(nome[i]))){
-                                nome[i][0] = '\0';
-                            }
+                gets(src_nm);
+                for(int i = 0; i < 3; i++){
+                        if(equalStrings(src_nm, nome[i], sizeof(nome[i]))){
+                            nome[i][0] = '\0';
                         }
-                        break;
-                    case 2:
-                        //email
-                        printf("Inserir o e-mail que deseja excluir--> ");
-                        gets(src_email);
-                        for(int i = 0; i < 3; i++){
-                            if(equalStrings(src_email, email[i], sizeof(email[i]))){
-                                email[i][0] = '\0';
-                                puts(email[i]);
-                            }
+                        else if(equalStrings(src_nm, email[i], sizeof(email[i]))){
+                            email[i][0] = '\0';
                         }
-                        break;
+                        else{
+                                cont++;
+                        }
+                }
+                if(cont == 3){
+                    printf("\n--> Nenhum registro foi encontrado");
                 }
                 writeData();
                 printf("\n\n--Tecle algo para voltar ao menu--");

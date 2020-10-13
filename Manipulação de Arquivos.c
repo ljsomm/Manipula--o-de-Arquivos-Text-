@@ -182,7 +182,7 @@ void main(){
                         }
                         else if(equalStrings(src_nm, email[i], sizeof(email[i]))){
                             printf("Inserir o novo email--> ");
-                            gets(nome[i]);
+                            gets(email[i]);
                         }
                         else{
                                 cont++;

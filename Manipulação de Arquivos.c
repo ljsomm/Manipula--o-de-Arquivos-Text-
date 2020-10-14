@@ -199,14 +199,12 @@ void main(){
                 cont = 0;
                 readData();
                 printf("=== EXCLUIR DADOS ===\n");
-                printf("\nInserir o que deseja excluir--> ");
+                printf("\nInserir o registro que deseja excluir--> ");
                 getchar();
                 gets(src_nm);
                 for(int i = 0; i < 3; i++){
-                        if(equalStrings(src_nm, nome[i], sizeof(nome[i]))){
+                        if(equalStrings(src_nm, nome[i], sizeof(nome[i]))||equalStrings(src_nm, email[i], sizeof(email[i]))){
                             nome[i][0] = '\0';
-                        }
-                        else if(equalStrings(src_nm, email[i], sizeof(email[i]))){
                             email[i][0] = '\0';
                         }
                         else{

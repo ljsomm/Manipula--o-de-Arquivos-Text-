@@ -26,15 +26,6 @@ int validEmail(const char *e){ //verifica se o email é valido (tendo @)
     return(bol);
 }
 
-void readOnlyNames(){ //Le apenas os nomes
-    FILE *arquivo;
-    arquivo = fopen("arq.txt", "rt");
-    for(int i = 0; i < 3; i++){
-            fread(nome[i], 1 , sizeof(nome[i]), arquivo);
-    }
-    fclose(arquivo);
-}
-
 void readData(){ //Le todos os dados
     FILE *arquivo;
     arquivo = fopen("arq.txt", "rt");
@@ -112,7 +103,7 @@ void main(){
                 break;
             case 3:
                 cont = 0;
-                readOnlyNames();
+                readData();
                 printf("=== PESQUISE UM NOME ===\n\nInsira o nome a ser pesquisado--> ");
                 getchar();
                 gets(src_nm);
@@ -124,7 +115,7 @@ void main(){
                         }
                     }
                     if(bol){
-                        printf("\nEncontrado--> %s", nome[i]);
+                        printf("\nEncontrado--> Nome: %s || Email: %s", nome[i], email[i]);
                     }
                     else{
                         cont++;
@@ -137,7 +128,7 @@ void main(){
                 getch();
                 break;
             case 4:
-                readOnlyNames();
+                readData();
                 bol = 1;
                 do{
                     printf("=== PESQUISE UM NOME COM SUA 1ª LETRA ===\n\nInsira a 1ª letra do nome--> ");
@@ -151,13 +142,13 @@ void main(){
                 for(int i = 0; i < 3; i++){
                     if(src_letter >= 65 && src_letter <= 90){
                         if(nome[i][0] == src_letter || nome[i][0] == src_letter+32){
-                            printf("\nEncontrado--> %s", nome[i]);
+                            printf("\nEncontrado--> Nome: %s || E-mail: %s", nome[i], email[i]);
                             bol = 0;
                         }
                     }
                     else if(src_letter >= 97 && src_letter <= 122){
                         if(nome[i][0] == src_letter || nome[i][0] == src_letter-32){
-                            printf("\nEncontrado--> %s", nome[i]);
+                            printf("\nEncontrado--> Nome: %s || E-mail: %s", nome[i], email[i]);
                             bol = 0;
                         }
                     }
